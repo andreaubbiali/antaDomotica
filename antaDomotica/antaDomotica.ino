@@ -2,6 +2,8 @@
 #include <AccelStepper.h>
 
 const int stepsPerRevolution = 2048;  // change this to fit the number of steps per revolution
+const int closeLimitValue = 100;
+const int openLimitValue = 200;
 
 // ULN2003 Motor Driver Pins
 #define IN1 5  //D1
@@ -12,6 +14,10 @@ const int stepsPerRevolution = 2048;  // change this to fit the number of steps 
 int swithInput = D7;
 int startRotationInput = D6;
 bool rotation = false;
+int countClose = 0;
+int countOpen = 0;
+// isOPEN indicate if the door is open or not. isPRActive indicate if the photoresistence is active.
+bool isOPEN, isPRActive;
 
 // AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
@@ -23,8 +29,10 @@ void setup() {
   // set the speed and acceleration
   stepper.setMaxSpeed(500);
   stepper.setAcceleration(100);
-  // // set target position
-  // stepper.moveTo(stepsPerRevolution);
+  // set target position  
+  stepper.runToPosition(0);
+  isOPEN = false;
+  isPRActive = true;
 
   pinMode(swithInput, INPUT);
   pinMode(startRotationInput, INPUT);
@@ -35,23 +43,36 @@ void setup() {
 
 void loop() {
 
-  if (rotation == true) {
-    stepper.move(64);
-    stepper.run();
+  if (isPRActive) {
+    photoResistenceRead();    
+  }
+  
+  delay(100);
+
+}
+
+/*
+* Read photoresistence and if is a certain value start close/open
+*/
+void photoResistenceRead() {
+  int value = analogRead(A0);
+
+  if (isOpen) {
+    if (value > closeLimitValue) {
+      countClose += 1;
+      if (countClose >= ) {
+        // close
+      }
+    } 
   } else {
-    delay(1000);
+
+    if (value < openLimitValue) {
+      // open
+    }    
   }
 
-  
-
-  // // check current stepper motor position to invert direction
-  // if (stepper.distanceToGo() == 0){
-  //   stepper.moveTo(-stepper.currentPosition());
-  //   Serial.println("Changing direction");
-  // }
-  // // move the stepper motor (one step at a time)
-  // stepper.run();
 }
+
 
 ICACHE_RAM_ATTR void limitSwitch() {
   Serial.println("FINE CORSA CLICCATO");
