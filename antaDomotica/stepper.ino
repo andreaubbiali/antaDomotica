@@ -1,5 +1,5 @@
 
-void openDoor() {
-  stepper.move();
-  stepper.run();
-}
+// void openDoor() {
+//   stepper.move();
+//   stepper.run();
+// }
