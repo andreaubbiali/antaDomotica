@@ -16,21 +16,20 @@ float calcSpeedOfSound() {
 /**
 * Start distance sensor to check if exist an obstacle.
 */
-void distanceSensor() {
+void distanceSensor(int trigP, int echoP) {
   
   float speedOfSound = calcSpeedOfSound();
-
   countPossibleObstacle = 0;
 
-  while (checkDistance) {
+  while(true) {
 
-    digitalWrite(trigPin, LOW);
+    digitalWrite(trigP, LOW);
     delayMicroseconds(2);
-    digitalWrite(trigPin, HIGH);
+    digitalWrite(trigP, HIGH);
     delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
+    digitalWrite(trigP, LOW);
 
-    duration = pulseIn(echoPin, HIGH);
+    duration = pulseIn(echoP, HIGH);
     float distance = (duration / 20000.0) * speedOfSound;
     if (distance > 1 && distance < minDistanceObstacle) {
         countPossibleObstacle += 1;

@@ -2,10 +2,11 @@
 // #include "EspMQTTClient.h"
 // #include "/home/aubbiali/Arduino/WifiConfig.h"
 //https://github.com/plapointe6/EspMQTTClient
+#include "/home/aubbiali/Arduino/antaDomotica/constant.h"
 
 #define DHTPIN D7  // Digital pin connected to the DHT sensor
-#define trigPin D2
-#define echoPin D5
+#define trigPinL D2
+#define echoPinL D5
 
 #define DHTTYPE DHT11
 
@@ -21,7 +22,6 @@ DHT dht(DHTPIN, DHTTYPE);
 
 float temperature = 1.0;
 float duration, distance;
-float checkDistance;
 const int obstaclePinSignal = D0;
 
 void setup() {
@@ -34,9 +34,17 @@ void setup() {
 }
 
 void loop() {
+  
+  if (Serial.available() > 0) {
+    int c = Serial.read();
+    if (c == ACTIVATE_DS_LEFT) {
+      distanceSensor(trigPinL, echoPinL);
+    } else if (c == ACTIVATE_DS_RIGHT){
+      distanceSensor(trigPin, echoPin);
+    }
+  }
 
-  checkDistance = true;
-  distanceSensor();
+  
 
   // if (!client.isConnected()){
   //   Serial.println("NOT CONNECTED");

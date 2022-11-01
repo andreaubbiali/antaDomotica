@@ -1,0 +1,4 @@
+#define ACTIVATE_DS_LEFT 0
+#define ACTIVATE_DS_RIGHT 1
+
+#define STOP_DS 2
