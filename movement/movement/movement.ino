@@ -12,7 +12,8 @@ const int stepsPerRevolution = 4096;  // change this to fit the number of steps 
 int limitSwitchOrObstacle = D7;
 int buttonClose = D4;
 int buttonOpen = D3;
-bool rotation, isOpen;
+int manAutomButton = D0;
+bool rotation, isOpen, isManual;
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
@@ -28,24 +29,42 @@ void setup() {
 
   pinMode(buttonClose, INPUT);
   pinMode(buttonOpen, INPUT);
+  pinMode(manAutomButton, INPUT);
 
   // set interrupt
   pinMode(limitSwitchOrObstacle, INPUT);
   attachInterrupt(digitalPinToInterrupt(limitSwitchOrObstacle), limitSwitch, FALLING);
 
   initialDoorSetup();
+  isManual = true;
 }
 
 void loop() {
 
-  if (digitalRead(buttonClose) == LOW) {
+  if (isManual) {
+    if (digitalRead(buttonClose) == LOW) {
     closeDoor();
-  } else if (digitalRead(buttonOpen) == LOW) {
-    openDoor();
+    } else if (digitalRead(buttonOpen) == LOW) {
+      openDoor();
+    }
+  } else {
+    
+    readPhotoresistence();
+    
+  }
+
+  if (digitalRead(manAutomButton) == LOW) {
+    isManual = !isManual;
+    delay(200);
   }
 
   delay(150);
-  
+}
+
+
+const uint photoResistenceLimit = 100;
+void readPhotoresistence() {
+  Serial.println(analogRead(A0));
 }
 
 
