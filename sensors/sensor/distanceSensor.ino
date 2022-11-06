@@ -21,7 +21,19 @@ void distanceSensor(int trigP, int echoP) {
   float speedOfSound = calcSpeedOfSound();
   countPossibleObstacle = 0;
 
-  while(true) {
+  // send to other board the message i'm started
+  Serial.print(ds_activated);
+  bool exitLoop = false;
+
+  while(!exitLoop) {
+
+    if ( Serial.available() > 0 ) {
+      char msg = Serial.read();
+      // door is arrived at end point
+      if (msg == ds_stop) {
+        exitLoop = true;
+      }
+    }
 
     digitalWrite(trigP, LOW);
     delayMicroseconds(2);
@@ -31,21 +43,26 @@ void distanceSensor(int trigP, int echoP) {
 
     duration = pulseIn(echoP, HIGH);
     float distance = (duration / 20000.0) * speedOfSound;
+
     if (distance > 1 && distance < minDistanceObstacle) {
-        countPossibleObstacle += 1;
-        if (countPossibleObstacle >= 3) {
-          Serial.println("INVIO INTERRUPT");
-          digitalWrite(obstaclePinSignal, LOW);
-          delay(500);
-          digitalWrite(obstaclePinSignal, HIGH); 
-          countPossibleObstacle = 0;                   
-        }
+      countPossibleObstacle += 1;
+      exitLoop = isInterruptSended(countPossibleObstacle);
     }
-    // if (distance <= minDistanceObstacle && distance >= 2) {
-    // // if (distance <= minDistanceObstacle) {
-    //   Serial.println("ERRORE FERMATI");
-    // }
+
     delay(100);
   }
+}
+
+bool isInterruptSended(int count) {
+
+  if (count >= 3) {
+    Serial.println("INVIO INTERRUPT");
+    digitalWrite(obstaclePinSignal, LOW);
+    delay(500);
+    digitalWrite(obstaclePinSignal, HIGH); 
+    return true;                 
+  }
+
+  return false;
 }
 

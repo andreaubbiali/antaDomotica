@@ -1,7 +1,15 @@
 
 #include <AccelStepper.h>
+#include "/home/aubbiali/universita/sisEmbedded/antaDomotica/constant.h"
 
 const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
+const int maxTimerResponse = 2000;
+
+// messages sent to other board
+const char ds_stop = DS_STOP;
+const char activate_ds_open = ACTIVATE_DS_OPEN;
+const char activate_ds_close = ACTIVATE_DS_CLOSE;
+
 
 // ULN2003 Motor Driver Pins
 #define IN1 D1

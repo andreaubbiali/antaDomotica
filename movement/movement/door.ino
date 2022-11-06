@@ -15,12 +15,13 @@ void initialDoorSetup() {
 }
 
 /**
-* Open door.
+* Open door if not already opened and the other board is able to start the distance sensor.
 */
 void openDoor() {
   Serial.println("OPEN CLICK");
 
-  if (!isOpen) {
+  if (!isOpen && comunicateMovement(activate_ds_open)) {
+
     stepper.move(-stepsPerRevolution); 
 
     rotation = true;
@@ -31,12 +32,12 @@ void openDoor() {
 }
 
 /**
-* Close door.
+* Close door if not already closed and the other board is able to start the distance sensor.
 */
 void closeDoor() {
   Serial.println("CLOSE CLICK");
 
-  if (isOpen){
+  if (isOpen && comunicateMovement(activate_ds_close)){
     stepper.move(stepsPerRevolution); 
 
     rotation = true;
@@ -45,6 +46,30 @@ void closeDoor() {
     isOpen = false;
   }
   
+}
+
+/**
+* The door is going to move, we have to start the distance sensor on the other board and wait for the response to be sure it has been activated.
+*/
+bool comunicateMovement(char movementCode){
+
+  // comunicate to the other board
+  Serial.print(movementCode);
+  bool response = false;
+  int timerResponse = millis();
+
+  while(!response && ((millis() - timerResponse) < maxTimerResponse) ) {
+
+    if (Serial.available() > 0) {
+      char c = Serial.read();
+      if (c == DS_ACTIVATED) {
+        response = true;
+      }
+    }
+
+  }
+  
+  return response;
 }
 
 /**
@@ -62,6 +87,7 @@ void moveDoor() {
 /**
 * Try to put the door in the open state.
 * Now the door is at one of the limit switch but we don't know which of them (the open or close one).
+* No obstacle sensor is activated so for this first passage be sure the radius of movement is free.
 */
 void tryOpenDoor() {
 

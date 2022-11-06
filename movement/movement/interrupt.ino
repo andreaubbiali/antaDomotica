@@ -4,7 +4,8 @@
 ICACHE_RAM_ATTR void limitSwitch() {
 
   if (rotation && ((millis() - lastDebounceTime) > debounceDelay)) {
-    Serial.println("FINE CORSA CLICCATO");
+    
+    Serial.print(ds_stop);
     
     resetStepper();
 
