@@ -1,5 +1,7 @@
 
 #include <AccelStepper.h>
+#include "EspMQTTClient.h" //https://github.com/plapointe6/EspMQTTClient
+#include "/home/aubbiali/universita/sisEmbedded/WifiConfig.h"
 #include "/home/aubbiali/universita/sisEmbedded/antaDomotica/constant.h"
 
 const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
@@ -9,6 +11,14 @@ const int maxTimerResponse = 2000;
 const char ds_stop = DS_STOP;
 const char activate_ds_open = ACTIVATE_DS_OPEN;
 const char activate_ds_close = ACTIVATE_DS_CLOSE;
+
+EspMQTTClient mqttClient(
+  WIFI_SSID,
+  WIFI_PSW,
+  "test.mosquitto.org",
+  "TestClient",
+  1883
+);
 
 
 // ULN2003 Motor Driver Pins
@@ -25,6 +35,9 @@ bool rotation, isOpen, isManual;
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
+
+uint countPhotoResistenceUp;
+uint countPhotoResistenceLow;
 
 // AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
@@ -51,7 +64,7 @@ void loop() {
 
   if (isManual) {
     if (digitalRead(buttonClose) == LOW) {
-    closeDoor();
+      closeDoor();
     } else if (digitalRead(buttonOpen) == LOW) {
       openDoor();
     }
@@ -63,16 +76,17 @@ void loop() {
 
   if (digitalRead(manAutomButton) == LOW) {
     isManual = !isManual;
-    delay(200);
+    countPhotoResistenceUp = 0;
+    countPhotoResistenceLow = 0;
+    delay(100);
+  }
+
+  mqttClient.loop();
+  if (!mqttClient.isConnected()) {
+    Serial.println("not connected");
   }
 
   delay(150);
-}
-
-
-const uint photoResistenceLimit = 100;
-void readPhotoresistence() {
-  Serial.println(analogRead(A0));
 }
 
 
