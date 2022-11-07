@@ -11,7 +11,6 @@ void initialDoorSetup() {
     isOpen = false;
     openDoor();
   }
-
 }
 
 /**
@@ -29,6 +28,8 @@ void openDoor() {
     moveDoor();
     isOpen = true;
   }
+
+  sendDoorMQTTDoorStatus("open");
 }
 
 /**
@@ -45,7 +46,8 @@ void closeDoor() {
     moveDoor();
     isOpen = false;
   }
-  
+
+  sendDoorMQTTDoorStatus("close");  
 }
 
 /**
@@ -109,6 +111,7 @@ void tryOpenDoor() {
 
   resetStepper();
   isOpen = true;
+  sendDoorMQTTDoorStatus("open");
 }
 
 void resetStepper(){
