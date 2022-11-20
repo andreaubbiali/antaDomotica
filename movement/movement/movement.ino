@@ -38,6 +38,8 @@ unsigned long debounceDelay = 1500;    // the debounce time; increase if the out
 
 uint countPhotoResistenceUp;
 uint countPhotoResistenceLow;
+const uint readPhotoResistenceInterval = 10000;
+uint lastPhotoresistenceRead = millis();
 
 // AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
@@ -70,8 +72,11 @@ void loop() {
     }
   } else {
     
-    readPhotoresistence();
-    
+    if (millis() - lastPhotoresistenceRead > readPhotoResistenceInterval) {
+      // read photoresistence
+      lastPhotoresistenceRead = millis();
+      readPhotoresistence();
+    }
   }
 
   if (digitalRead(manAutomButton) == LOW) {
