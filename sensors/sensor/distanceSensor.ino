@@ -1,5 +1,6 @@
 const int minDistanceObstacle = 3;
 int countPossibleObstacle;
+const int maximumPossibleObstacle = 3;
 
 /**
 * Calc of speed of sound
@@ -16,25 +17,13 @@ float calcSpeedOfSound() {
 /**
 * Start distance sensor to check if exist an obstacle.
 */
-void distanceSensor(int trigP, int echoP) {
-  
+void distanceSensor(){
+
   float speedOfSound = calcSpeedOfSound();
   countPossibleObstacle = 0;
+  sendSensorStartMessage();
 
-  // send to other board the message i'm started
-  Serial.print(ds_activated);
-  bool exitLoop = false;
-
-  while(!exitLoop) {
-
-    if ( Serial.available() > 0 ) {
-      char msg = Serial.read();
-      // door is arrived at end point
-      if (msg == ds_stop) {
-        exitLoop = true;
-      }
-    }
-
+  while(checkSensor){
     digitalWrite(trigP, LOW);
     delayMicroseconds(2);
     digitalWrite(trigP, HIGH);
@@ -46,16 +35,20 @@ void distanceSensor(int trigP, int echoP) {
 
     if (distance > 1 && distance < minDistanceObstacle) {
       countPossibleObstacle += 1;
-      exitLoop = isInterruptSended(countPossibleObstacle);
+      checkSensor = !isInterruptSended(countPossibleObstacle);
     }
 
+    mqttClient.loop();
     delay(100);
   }
 }
 
+/**
+* Send interrupt (to stop the movement) if count is bigger than the maximum possible obstacle counter
+*/
 bool isInterruptSended(int count) {
 
-  if (count >= 3) {
+  if (count >= maximumPossibleObstacle) {
     Serial.println("INVIO INTERRUPT");
     digitalWrite(obstaclePinSignal, LOW);
     delay(500);

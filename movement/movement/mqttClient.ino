@@ -28,6 +28,17 @@ void onConnectionEstablished() {
       isManual = false;
     }
   });
+
+  mqttClient.subscribe(applicationPrefix + "distanceSensor", [](const String& payload) {
+    Serial.println("RISPOSTA RICEVUTA");
+    Serial.println(DS_ACTIVATED);
+    Serial.println(payload);
+    
+    if (payload == DS_ACTIVATED) {
+      sensorResponse = true;
+    }
+  });
+  
 }
 
 /**
@@ -36,4 +47,8 @@ void onConnectionEstablished() {
 void sendDoorMQTTDoorStatus(String msg) {
   // send message with retained true
   mqttClient.publish(applicationPrefix + "doorStatus", msg);
+}
+
+void sendDoorMovement(String msg) {
+  mqttClient.publish(applicationPrefix + "doorMovement", msg);
 }

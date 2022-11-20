@@ -5,18 +5,14 @@
 #include "/home/aubbiali/universita/sisEmbedded/antaDomotica/constant.h"
 
 const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
-const int maxTimerResponse = 2000;
+const int maxTimerResponse = 8000;
 
-// messages sent to other board
-const char ds_stop = DS_STOP;
-const char activate_ds_open = ACTIVATE_DS_OPEN;
-const char activate_ds_close = ACTIVATE_DS_CLOSE;
-
+// TODO set setKeepAlive
 EspMQTTClient mqttClient(
   WIFI_SSID,
   WIFI_PSW,
   "test.mosquitto.org",
-  "TestClient",
+  "movementClient",
   1883
 );
 
@@ -31,7 +27,7 @@ int limitSwitchOrObstacle = D7;
 int buttonClose = D4;
 int buttonOpen = D3;
 int manAutomButton = D0;
-bool rotation, isOpen, isManual;
+bool rotation, isOpen, isManual, sensorResponse;
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers

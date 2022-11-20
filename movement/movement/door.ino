@@ -19,7 +19,7 @@ void initialDoorSetup() {
 void openDoor() {
   Serial.println("OPEN CLICK");
 
-  if (!isOpen && comunicateMovement(activate_ds_open)) {
+  if (!isOpen && comunicateMovement(ACTIVATE_DS_OPEN)) {
 
     stepper.move(-stepsPerRevolution); 
 
@@ -38,7 +38,7 @@ void openDoor() {
 void closeDoor() {
   Serial.println("CLOSE CLICK");
 
-  if (isOpen && comunicateMovement(activate_ds_close)){
+  if (isOpen && comunicateMovement(ACTIVATE_DS_CLOSE)){
     stepper.move(stepsPerRevolution); 
 
     rotation = true;
@@ -53,25 +53,21 @@ void closeDoor() {
 /**
 * The door is going to move, we have to start the distance sensor on the other board and wait for the response to be sure it has been activated.
 */
-bool comunicateMovement(char movementCode){
+bool comunicateMovement(String movementCode){
 
   // comunicate to the other board
-  Serial.print(movementCode);
-  bool response = false;
+  sendDoorMovement(movementCode);
+  sensorResponse = false;
   int timerResponse = millis();
 
-  while(!response && ((millis() - timerResponse) < maxTimerResponse) ) {
-
-    if (Serial.available() > 0) {
-      char c = Serial.read();
-      if (c == DS_ACTIVATED) {
-        response = true;
-      }
-    }
-
+  while(!sensorResponse && ((millis() - timerResponse) < maxTimerResponse) ) {
+    mqttClient.loop();
+    delay(100);
   }
+
+  Serial.println("risposta ricevuta " + sensorResponse);
   
-  return response;
+  return sensorResponse;
 }
 
 /**
