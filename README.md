@@ -6,3 +6,7 @@ Il progetto consiste nel progettare un'anta domotica che si apre/chiude in base 
 
 DHT library from adafruit
 https://github.com/adafruit/DHT-sensor-library
+
+## DEFAULT
+
+In default the door will close at 22pm and will open at 6am (from this it will remain in automatic mode)
