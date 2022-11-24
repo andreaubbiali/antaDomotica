@@ -20,11 +20,11 @@ const String OPEN = "open";
 
 int limitSwitchOrObstacle = D7;
 int buttonClose = D0;
-int buttonOpen = D3;
-int manAutomButton = D4;
+int buttonOpen = D4;
+int manAutomButton = D3;
 bool rotation, isOpen, isManual, sensorResponse;
 
-unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long lastDebounceTimeSwitch = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
 
 uint lastAutomaticaRead = millis();
@@ -53,11 +53,12 @@ void setup() {
 
   pinMode(buttonClose, INPUT);
   pinMode(buttonOpen, INPUT);
-  pinMode(manAutomButton, INPUT);
 
   // set interrupt
   pinMode(limitSwitchOrObstacle, INPUT);
   attachInterrupt(digitalPinToInterrupt(limitSwitchOrObstacle), limitSwitch, FALLING);
+  pinMode(manAutomButton, INPUT);
+  attachInterrupt(digitalPinToInterrupt(manAutomButton), manAutInterrupt, FALLING);
   
   while(!mqttClient.isConnected()){
     mqttClient.loop();
@@ -101,12 +102,6 @@ void loop() {
       }
     }
 
-  }
-
-  if (digitalRead(manAutomButton) == LOW) {
-    Serial.println("BUTTON MANAUTO CLICKED");
-    setIsManual(!isManual);
-    delay(100);
   }
 
   mqttClient.loop();

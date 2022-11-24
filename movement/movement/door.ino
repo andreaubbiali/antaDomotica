@@ -24,7 +24,7 @@ void openDoor() {
     stepper.move(-stepsPerRevolution); 
 
     rotation = true;
-    lastDebounceTime = millis();
+    lastDebounceTimeSwitch = millis();
     moveDoor();
     isOpen = true;
   }
@@ -42,7 +42,7 @@ void closeDoor() {
     stepper.move(stepsPerRevolution); 
 
     rotation = true;
-    lastDebounceTime = millis();
+    lastDebounceTimeSwitch = millis();
     moveDoor();
     isOpen = false;
   }
@@ -89,12 +89,12 @@ void tryOpenDoor() {
 
   rotation = true;
   stepper.move(-stepsPerRevolution);
-  lastDebounceTime = millis();
+  lastDebounceTimeSwitch = millis();
 
   while(rotation) {
     
     // check if we are already in the open state.
-    if (digitalRead(limitSwitchOrObstacle) == LOW && ((millis() - lastDebounceTime) > debounceDelay)) {
+    if (digitalRead(limitSwitchOrObstacle) == LOW && ((millis() - lastDebounceTimeSwitch) > debounceDelay)) {
       rotation = false;
     }
 
