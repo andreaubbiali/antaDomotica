@@ -19,9 +19,9 @@ const String OPEN = "open";
 #define IN4 D6
 
 int limitSwitchOrObstacle = D7;
-int buttonClose = D4;
+int buttonClose = D0;
 int buttonOpen = D3;
-int manAutomButton = D0;
+int manAutomButton = D4;
 bool rotation, isOpen, isManual, sensorResponse;
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
@@ -76,6 +76,7 @@ void loop() {
 
   if (isManual) {
     if (digitalRead(buttonClose) == LOW) {
+      Serial.println("BUTTON CLOSE CLICKED");
       closeDoor();
     } else if (digitalRead(buttonOpen) == LOW) {
       openDoor();
@@ -103,7 +104,8 @@ void loop() {
   }
 
   if (digitalRead(manAutomButton) == LOW) {
-    isManual = !isManual;
+    Serial.println("BUTTON MANAUTO CLICKED");
+    setIsManual(!isManual);
     delay(100);
   }
 
