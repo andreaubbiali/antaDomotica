@@ -1,6 +1,6 @@
 // If the value readed from photoresistence is under this constant, the door should be closed
 const uint photoResistenceLimit = 250;
-const uint readPhotoResistenceMinutes = 2;
+const uint readPhotoResistenceMinutes = 0.5;
 
 /**
 * Read photoresistence
