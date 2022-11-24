@@ -17,8 +17,8 @@ void onConnectionEstablished() {
         Serial.println("CLOSE RECEIVED");
         // distanceSensor(trigPinClose, echoPinClose);
       } else if (payload == ACTIVATE_DS_OPEN) {
-        trigP = trigPinClose;
-        echoP = echoPinClose;
+        trigP = trigPinOpen;
+        echoP = echoPinOpen;
         Serial.println("OPEN RECEIVED");
         // distanceSensor(trigPinClose, echoPinClose);
       }
@@ -35,6 +35,12 @@ void onConnectionEstablished() {
 * Publish
 */
 void sendSensorStartMessage() {
-  // send message with retained true
   mqttClient.publish(applicationPrefix + "distanceSensor", DS_ACTIVATED);
+}
+
+void sendTemperature() {
+  mqttClient.publish(applicationPrefix + "temperature", String(temperature), true);
+
+  float humidity = dht.readHumidity();
+  mqttClient.publish(applicationPrefix + "humidity", String(humidity), true);
 }

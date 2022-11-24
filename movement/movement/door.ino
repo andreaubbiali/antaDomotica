@@ -64,8 +64,6 @@ bool comunicateMovement(String movementCode){
     mqttClient.loop();
     delay(100);
   }
-
-  Serial.println("risposta ricevuta " + sensorResponse);
   
   return sensorResponse;
 }

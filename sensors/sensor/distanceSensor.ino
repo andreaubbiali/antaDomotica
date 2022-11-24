@@ -3,13 +3,23 @@ int countPossibleObstacle;
 const int maximumPossibleObstacle = 3;
 
 /**
+* Populate (and send to mqtt) the temperature field with the new temperature if is present otherwise mantain the old temperature.
+* 
+*/
+void readTemperature(){
+  float temp = dht.readTemperature();
+  if (!isnan(temp)) {
+    temperature = temp;
+    sendTemperature();
+  }
+
+}
+
+/**
 * Calc of speed of sound
 */ 
 float calcSpeedOfSound() {
-  float newTemp = dht.readTemperature();
-  if (!isnan(newTemp)) {
-    temperature = newTemp;
-  }
+  readTemperature();
 
   return 331.3 + 0.606 * temperature;
 }

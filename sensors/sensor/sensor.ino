@@ -7,6 +7,9 @@
 #define trigPinClose D2
 #define echoPinClose D5
 
+#define trigPinOpen D6
+#define echoPinOpen D1
+
 #define DHTTYPE DHT11
 
 const int obstaclePinSignal = D0;
@@ -30,12 +33,21 @@ void setup() {
   Serial.begin(115200);
   pinMode(trigPinClose, OUTPUT);
   pinMode(echoPinClose, INPUT);
-  pinMode(obstaclePinSignal, OUTPUT);
+  pinMode(trigPinOpen, OUTPUT);
+  pinMode(echoPinOpen, INPUT);
+  pinMode(obstaclePinSignal, OUTPUT); 
 
   checkSensor = false;
 
   digitalWrite(obstaclePinSignal, HIGH);
   dht.begin();
+
+  while(!mqttClient.isConnected()){
+    mqttClient.loop();
+    delay(100);
+  }
+  Serial.println("connesso ed invio");
+  readTemperature();
 }
 
 void loop() {
