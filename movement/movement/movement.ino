@@ -1,4 +1,6 @@
-
+#include <ESP8266WiFi.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <AccelStepper.h>
 #include "EspMQTTClient.h" //https://github.com/plapointe6/EspMQTTClient
 #include "/home/aubbiali/universita/sisEmbedded/WifiConfig.h"
@@ -6,16 +8,9 @@
 
 const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
 const int maxTimerResponse = 8000;
-
-// TODO set setKeepAlive
-EspMQTTClient mqttClient(
-  WIFI_SSID,
-  WIFI_PSW,
-  "test.mosquitto.org",
-  "movementClient",
-  1883
-);
-
+const int automaticReadMinutes = AUTOMATIC_READ_MINUTE;
+const String CLOSE = "close";
+const String OPEN = "open";
 
 // ULN2003 Motor Driver Pins
 #define IN1 D1
@@ -32,13 +27,23 @@ bool rotation, isOpen, isManual, sensorResponse;
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
 
-uint countPhotoResistenceUp;
-uint countPhotoResistenceLow;
-const uint readPhotoResistenceInterval = 10000;
-uint lastPhotoresistenceRead = millis();
+uint lastAutomaticaRead = millis();
 
 // AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
+
+// MQTT CLIENT
+EspMQTTClient mqttClient(
+  WIFI_SSID,
+  WIFI_PSW,
+  "test.mosquitto.org",
+  "movementClient",
+  1883
+);
+
+// NTP CLIENT to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
 void setup() {
   Serial.begin(115200);
@@ -53,9 +58,18 @@ void setup() {
   // set interrupt
   pinMode(limitSwitchOrObstacle, INPUT);
   attachInterrupt(digitalPinToInterrupt(limitSwitchOrObstacle), limitSwitch, FALLING);
+  
+  while(!mqttClient.isConnected()){
+    mqttClient.loop();
+    delay(500);
+  }
+
+  setupNTP();
+
+  Serial.println("CARICATO TUTTO");  
 
   initialDoorSetup();
-  isManual = true;
+  setIsManual(true);
 }
 
 void loop() {
@@ -68,26 +82,39 @@ void loop() {
     }
   } else {
     
-    if (millis() - lastPhotoresistenceRead > readPhotoResistenceInterval) {
+    if (millis() - lastAutomaticaRead > (automaticReadMinutes*60000)) {
+      lastAutomaticaRead = millis();
+      
+      // get the movement to do based on time
+      String respTime = movementOnTime();
+
       // read photoresistence
-      lastPhotoresistenceRead = millis();
-      readPhotoresistence();
+      String respPhotoRes = readPhotoresistence();
+
+      if (respTime == respPhotoRes) {
+        if (respTime == CLOSE){
+          closeDoor();
+        } else if (respTime == OPEN) {
+          openDoor();
+        }
+      }
     }
+
   }
 
   if (digitalRead(manAutomButton) == LOW) {
     isManual = !isManual;
-    countPhotoResistenceUp = 0;
-    countPhotoResistenceLow = 0;
     delay(100);
   }
 
   mqttClient.loop();
-  if (!mqttClient.isConnected()) {
-    Serial.println("not connected");
-  }
 
   delay(150);
+}
+
+void setIsManual(bool value){
+  isManual = value;
+  sendUpdateIsManual();
 }
 
 
