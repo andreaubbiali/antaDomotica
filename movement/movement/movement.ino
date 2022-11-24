@@ -82,6 +82,9 @@ void loop() {
     } else if (digitalRead(buttonOpen) == LOW) {
       openDoor();
     }
+
+    
+
   } else {
     
     if (millis() - lastAutomaticaRead > (automaticReadMinutes*60000)) {
@@ -93,13 +96,7 @@ void loop() {
       // read photoresistence
       String respPhotoRes = readPhotoresistence();
 
-      if (respTime == respPhotoRes) {
-        if (respTime == CLOSE){
-          closeDoor();
-        } else if (respTime == OPEN) {
-          openDoor();
-        }
-      }
+      moveDoorAutomaticLogic(respTime, respPhotoRes);
     }
 
   }
@@ -107,6 +104,33 @@ void loop() {
   mqttClient.loop();
 
   delay(150);
+}
+
+/**
+* The purpose is that if I have decided to close the door it must remain closed (usually during the night) while if is automatic and I said to open it, 
+* if the photresistence decide to cloe it, the door should be closed.
+* 
+* photoresistence -> close        time -> open   = close
+* photoresistence -> open         time -> close  = close
+* photoresistence -> open         time -> open   = open
+* photoresistence -> close        time -> close  = close
+*/
+void moveDoorAutomaticLogic(String respTime, String respPhotoRes){
+  if (respTime == respPhotoRes) {
+    if (respTime == CLOSE){
+      closeDoor();
+    } else if (respTime == OPEN) {
+      openDoor();
+    }
+  }
+
+  if (respPhotoRes == CLOSE && respTime == OPEN){
+    closeDoor();
+  }
+
+  if (respPhotoRes == OPEN && respTime == CLOSE) {
+    closeDoor();
+  }
 }
 
 void setIsManual(bool value){

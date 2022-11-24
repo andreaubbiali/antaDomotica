@@ -10,3 +10,13 @@ https://github.com/adafruit/DHT-sensor-library
 ## DEFAULT
 
 In default the door will close at 22pm and will open at 6am (from this it will remain in automatic mode)
+
+
+## AUTOMATIC logic:
+
+The purpose is that if I have decided to close the door it must remain closed (usually during the night) while if is automatic and I said to open it, if the photresistence decide to cloe it, the door should be closed.
+
+photoresistence -> close        time -> open   = close
+photoresistence -> open         time -> close  = close
+photoresistence -> open         time -> open   = open
+photoresistence -> close        time -> close  = close

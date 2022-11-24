@@ -13,7 +13,6 @@ String readPhotoresistence() {
   // read until you reach n minutes of read or switch from automatic to manual (button pressed) 
   while(!isManual && (millis() < (startRead + (readPhotoResistenceMinutes*60000)))){
     uint val = analogRead(A0);
-    Serial.println("PHOTO VAL: " + String(val));
     if (val < photoResistenceLimit) {
       closeCount++;
     } else {
