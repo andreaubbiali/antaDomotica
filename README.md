@@ -20,3 +20,11 @@ photoresistence -> close        time -> open   = close
 photoresistence -> open         time -> close  = close
 photoresistence -> open         time -> open   = open
 photoresistence -> close        time -> close  = close
+
+<b> !ATTENTION! </b>
+For implementation behaviour close time must be > of the open time.
+So for example
+```
+open-time: 06:00
+close-time: 23:00
+```
