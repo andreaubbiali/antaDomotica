@@ -44,28 +44,6 @@ String movementOnTime() {
 }
 
 /**
-* Check if the door have to be closed
-*/
-bool isToClose(int currentHour, int currentMinutes){
-
-  if (currentHour >= closeHour && currentMinutes >= closeMinutes){
-    return true;
-  }
-  return false;
-}
-
-/**
-* Check if the door have to be closed
-*/
-bool isToOpen(int currentHour, int currentMinutes){
-
-  if (currentHour >= openHour && currentMinutes >= openMinutes){
-    return true;
-  }
-  return false;
-}
-
-/**
 * Check if a time is in the correct format (hh:ss)
 */
 bool isCorrectTime(String time){
