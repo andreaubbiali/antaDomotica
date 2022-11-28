@@ -1,5 +1,5 @@
 #include <DHT.h>
-#include "EspMQTTClient.h" //https://github.com/plapointe6/EspMQTTClient
+#include "EspMQTTClient.h"
 #include "/home/aubbiali/universita/sisEmbedded/WifiConfig.h"
 #include "/home/aubbiali/universita/sisEmbedded/antaDomotica/constant.h"
 
@@ -16,8 +16,7 @@ const int obstaclePinSignal = D0;
 float temperature = 1.0;
 float duration, distance;
 bool checkSensor;
-int trigP;
-int echoP;
+uint trigP, echoP;
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -46,7 +45,7 @@ void setup() {
     mqttClient.loop();
     delay(100);
   }
-  Serial.println("connesso ed invio");
+  
   readTemperature();
 }
 
@@ -58,21 +57,5 @@ void loop() {
     
   mqttClient.loop();
   delay(150);    
-  
-  // if (Serial.available() > 0) {
-  //   char msg = Serial.read();
-  //   if (msg == activate_ds_close) {
-  //     Serial.println("CLOSE RECEIVED");
-  //     distanceSensor(trigPinClose, echoPinClose);
-  //   } else if (msg == activate_ds_open) {
-  //     Serial.println("OPEN RECEIVED");
-  //     distanceSensor(trigPinClose, echoPinClose);
-  //   }
-  //   // if (c == ACTIVATE_DS_LEFT) {
-  //   //   
-  //   // } else if (c == ACTIVATE_DS_RIGHT){
-  //   //   // distanceSensor(trigPin, echoPin);
-  //   // }
-  // }
 }
 

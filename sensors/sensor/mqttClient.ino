@@ -14,13 +14,9 @@ void onConnectionEstablished() {
       if (payload == ACTIVATE_DS_CLOSE) {
         trigP = trigPinClose;
         echoP = echoPinClose;
-        Serial.println("CLOSE RECEIVED");
-        // distanceSensor(trigPinClose, echoPinClose);
       } else if (payload == ACTIVATE_DS_OPEN) {
         trigP = trigPinOpen;
         echoP = echoPinOpen;
-        Serial.println("OPEN RECEIVED");
-        // distanceSensor(trigPinClose, echoPinClose);
       }
 
       checkSensor = true;

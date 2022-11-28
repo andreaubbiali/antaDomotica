@@ -59,7 +59,6 @@ void distanceSensor(){
 bool isInterruptSended(int count) {
 
   if (count >= maximumPossibleObstacle) {
-    Serial.println("INVIO INTERRUPT");
     digitalWrite(obstaclePinSignal, LOW);
     delay(500);
     digitalWrite(obstaclePinSignal, HIGH); 
