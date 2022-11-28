@@ -91,3 +91,6 @@ void sendUpdateIsManual(){
   mqttClient.publish(applicationPrefix + "isManual", String(isManual), true);
 }
 
+void sendPhotoresistenceResp(String resp){
+  mqttClient.publish(applicationPrefix + "photoResistenceResp", resp);
+}

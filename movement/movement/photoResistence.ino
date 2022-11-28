@@ -9,6 +9,7 @@ String readPhotoresistence() {
   uint startRead = millis();
   uint closeCount = 0;
   uint openCount = 0;
+  String resp;
 
   // read until you reach n minutes of read or switch from automatic to manual (button pressed) 
   while(!isManual && (millis() < (startRead + (readPhotoResistenceMinutes*60000)))){
@@ -23,8 +24,11 @@ String readPhotoresistence() {
   }
 
   if (closeCount>openCount){
-    return CLOSE;
+    resp = CLOSE;
   } else {
-    return OPEN;
+    resp = OPEN;
   }
+
+  sendPhotoresistenceResp(resp);
+  return resp;
 }
