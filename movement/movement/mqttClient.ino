@@ -40,7 +40,7 @@ void onConnectionEstablished() {
   });
 
   /**
-  * Set evening close time (the time must be of type HH:MM)
+  * Set evening close time (the time must be of type HH)
   */
   mqttClient.subscribe(applicationPrefix + "setCloseTime", [](const String& payload) {
 
@@ -54,7 +54,7 @@ void onConnectionEstablished() {
   });
 
   /**
-  * Set morning open time (the time must be of type HH:MM)
+  * Set morning open time (the time must be of type HH)
   */
   mqttClient.subscribe(applicationPrefix + "setOpenTime", [](const String& payload) {
 
@@ -78,13 +78,13 @@ void sendDoorMovement(String msg) {
   mqttClient.publish(applicationPrefix + "doorMovement", msg);
 }
 
-void sendUpdateCloseTime(int hours, int minutes) {
-  Serial.println("SEND UPDATE CLOSE TIME: " + String(hours) + ":" + String(minutes));
-  mqttClient.publish(applicationPrefix + "closeTime", String(hours) + ":" + String(minutes), true);
+void sendUpdateCloseTime(int hours) {
+  Serial.println("SEND UPDATE CLOSE TIME: " + String(hours));
+  mqttClient.publish(applicationPrefix + "closeTime", String(hours) + ":00", true);
 } 
 
-void sendUpdateOpenTime(int hours, int minutes) {
-  mqttClient.publish(applicationPrefix + "openTime", String(hours) + ":" + String(minutes), true);
+void sendUpdateOpenTime(int hours) {
+  mqttClient.publish(applicationPrefix + "openTime", String(hours) + ":00", true);
 }
 
 void sendUpdateIsManual(){

@@ -1,7 +1,7 @@
 /**
 * Movement based on the time specified
 */
-int closeHour, closeMinutes, openHour = 0, openMinutes = 0;
+int closeHour, openHour = 0;
 
 void setupNTP(){
   WiFi.begin(WIFI_SSID, WIFI_PSW);
@@ -14,14 +14,14 @@ void setupNTP(){
   // set default close time
   String time = CLOSE_TIME;
   if(!isCorrectTime(time)){
-    time = "22:00";
+    time = "22";
   }
   setCloseTime(time);
 
   // set default open time
   time = OPEN_TIME;
   if(!isCorrectTime(time)){
-    time = "06:00";
+    time = "06";
   }
   setOpenTime(time);
 }
@@ -33,35 +33,27 @@ void setupNTP(){
 String movementOnTime() {
   timeClient.update();
   int currentHour = timeClient.getHours();
-  int currentMinutes = timeClient.getMinutes();
 
-  if (currentHour >= openHour && currentMinutes >= openMinutes &&
-      currentHour < closeHour && currentMinutes < closeMinutes){
-    return OPEN;
+
+  Serial.println("ORARIO: " + String(currentHour) );
+  Serial.println("ORARIO open: " + String(openHour) );
+  Serial.println("ORARIOCLOSE : " + String(closeHour) );
+
+  if (currentHour >= openHour && currentHour < closeHour){
+    return OPEN;     
   }
 
   return CLOSE;
 }
 
 /**
-* Check if a time is in the correct format (hh:ss)
+* Check if a time is in the correct format (is an integer number between 0 and 24)
 */
 bool isCorrectTime(String time){
 
-  // check the separator
-  int index = time.indexOf(":");
-  if (index == -1 || index == (time.length()-1)){
-    return false;
-  }
-
-  // substring not a number
-  if (time.substring(0, index).toInt() == 0 && time.substring(0, index) != "0"){
-    return false;
-  }
-
-  // substring not a number
-  if (time.substring(index+1).toInt() == 0 && time.substring(index+1) != "0"){
-    return false;
+  uint hours = time.toInt();
+  if ((hours == 0 && time != "0") || hours > 24){
+    return false;    
   }
     
   return true;
@@ -73,21 +65,15 @@ bool isCorrectTime(String time){
 * !ATTENTION! call this method only after checking isCorrectTime
 */
 void setCloseTime(String time){
-  int tmpHour = getHourFromTime(time);
-  int tmpMinutes = getMinutesFromTime(time);
+  uint tmpHour = time.toInt();
 
   if (tmpHour < openHour) {
     return;
   }
 
-  if (tmpHour == openHour && tmpMinutes <= openMinutes) {
-    return;
-  }
-
   closeHour = tmpHour;
-  closeMinutes = tmpMinutes;
 
-  sendUpdateCloseTime(closeHour, closeMinutes);
+  sendUpdateCloseTime(closeHour);
 }
 
 /**
@@ -95,36 +81,13 @@ void setCloseTime(String time){
 * !ATTENTION! call this method only after checking isCorrectTime
 */
 void setOpenTime(String time){
-  int tmpHour = getHourFromTime(time);
-  int tmpMinutes = getMinutesFromTime(time);
+  int tmpHour = time.toInt();
 
   if (tmpHour > closeHour){
     return;
   }
-
-  if (tmpHour == closeHour && tmpMinutes >= closeMinutes) {
-    return;
-  }
   
   openHour = tmpHour;
-  openMinutes = tmpMinutes;
-  sendUpdateOpenTime(openHour, openMinutes);
-}
-
-// GETTER
-/**
-* Get hour from time string.
-* !ATTENTION! call this method only after checking isCorrectTime
-*/
-int getHourFromTime(String time){
-  return time.substring(0, 2).toInt();
-}
-
-/**
-* Get minutes from time string.
-* !ATTENTION! call this method only after checking isCorrectTime
-*/
-int getMinutesFromTime(String time){
-  return time.substring(3, 5).toInt();
+  sendUpdateOpenTime(openHour);
 }
 
