@@ -12,11 +12,9 @@ void onConnectionEstablished() {
   mqttClient.subscribe(applicationPrefix + "moveDoor", [](const String& payload) {
     if (isManual) {
       if (payload == "close"){
-        Serial.println("RECEIVED CLOSE FROM MQTT");
         closeDoor();
       } else if (payload == "open"){
         openDoor();
-        Serial.println("RECEIVED OPEN FROM MQTT");
       } 
     }
   });
@@ -30,10 +28,6 @@ void onConnectionEstablished() {
   });
 
   mqttClient.subscribe(applicationPrefix + "distanceSensor", [](const String& payload) {
-    Serial.println("RISPOSTA RICEVUTA");
-    Serial.println(DS_ACTIVATED);
-    Serial.println(payload);
-    
     if (payload == DS_ACTIVATED) {
       sensorResponse = true;
     }
@@ -43,29 +37,25 @@ void onConnectionEstablished() {
   * Set evening close time (the time must be of type HH)
   */
   mqttClient.subscribe(applicationPrefix + "setCloseTime", [](const String& payload) {
-
-    Serial.println("SET CLOSE TIME ARRIVED " + payload);
     if (isCorrectTime(payload)){
-      Serial.println("ENTRA in set close time");
-      Serial.println("SET CLOSE TIME");
       setCloseTime(payload);
     }
-
   });
 
   /**
   * Set morning open time (the time must be of type HH)
   */
   mqttClient.subscribe(applicationPrefix + "setOpenTime", [](const String& payload) {
-
     if (isCorrectTime(payload)){
-      Serial.println("SET OPEN TIME");
       setOpenTime(payload);
     }
-
   });
   
 }
+
+/**
+* MQTT PUBLISH:
+*/
 
 /**
 * Send the actual status of the door.
@@ -79,7 +69,6 @@ void sendDoorMovement(String msg) {
 }
 
 void sendUpdateCloseTime(int hours) {
-  Serial.println("SEND UPDATE CLOSE TIME: " + String(hours));
   mqttClient.publish(applicationPrefix + "closeTime", String(hours) + ":00", true);
 } 
 

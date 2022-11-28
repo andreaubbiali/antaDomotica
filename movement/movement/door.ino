@@ -17,8 +17,6 @@ void initialDoorSetup() {
 * Open door if not already opened and the other board is able to start the distance sensor.
 */
 void openDoor() {
-  Serial.println("OPEN CLICK");
-
   if (!isOpen && comunicateMovement(ACTIVATE_DS_OPEN)) {
 
     stepper.move(-stepsPerRevolution); 
@@ -36,9 +34,8 @@ void openDoor() {
 * Close door if not already closed and the other board is able to start the distance sensor.
 */
 void closeDoor() {
-  Serial.println("CLOSE CLICK");
-
   if (isOpen && comunicateMovement(ACTIVATE_DS_CLOSE)){
+    
     stepper.move(stepsPerRevolution); 
 
     rotation = true;
@@ -75,6 +72,7 @@ void moveDoor() {
 
   while(rotation) {
     stepper.run();
+    mqttClient.loop();
     yield();
   }
 

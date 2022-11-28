@@ -2,35 +2,33 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <AccelStepper.h>
-#include "EspMQTTClient.h" //https://github.com/plapointe6/EspMQTTClient
+#include "EspMQTTClient.h"
 #include "/home/aubbiali/universita/sisEmbedded/WifiConfig.h"
 #include "/home/aubbiali/universita/sisEmbedded/antaDomotica/constant.h"
-
-const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
-const int maxTimerResponse = 8000;
-const int automaticReadMinutes = AUTOMATIC_READ_MINUTE;
-const String CLOSE = "close";
-const String OPEN = "open";
 
 // ULN2003 Motor Driver Pins
 #define IN1 D1
 #define IN2 D2
 #define IN3 D5
 #define IN4 D6
+AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-int limitSwitchOrObstacle = D7;
-int buttonClose = D0;
-int buttonOpen = D4;
-int manAutomButton = D3;
-bool rotation, isOpen, isManual, sensorResponse;
+const uint limitSwitchOrObstacle = D7;
+const uint buttonClose = D0;
+const uint buttonOpen = D4;
+const uint manAutomButton = D3;
+
+const uint stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
+const uint maxTimerResponse = 4000;
+const uint automaticReadMinutes = AUTOMATIC_READ_MINUTE;
+const String CLOSE = "close";
+const String OPEN = "open";
 
 unsigned long lastDebounceTimeSwitch = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
+const unsigned long debounceDelay = 1500;    // the debounce time; increase if the output flickers
 
 uint lastAutomaticaRead = millis();
-
-// AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
-AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
+bool rotation, isOpen, isManual, sensorResponse;
 
 // MQTT CLIENT
 EspMQTTClient mqttClient(
@@ -67,8 +65,6 @@ void setup() {
 
   setupNTP();
 
-  Serial.println("CARICATO TUTTO");  
-
   initialDoorSetup();
   setIsManual(true);
 }
@@ -77,13 +73,10 @@ void loop() {
 
   if (isManual) {
     if (digitalRead(buttonClose) == LOW) {
-      Serial.println("BUTTON CLOSE CLICKED");
       closeDoor();
     } else if (digitalRead(buttonOpen) == LOW) {
       openDoor();
     }
-
-    
 
   } else {
     
@@ -108,7 +101,7 @@ void loop() {
 
 /**
 * The purpose is that if I have decided to close the door it must remain closed (usually during the night) while if is automatic and I said to open it, 
-* if the photresistence decide to cloe it, the door should be closed.
+* if the photresistence decide to close it, the door should be closed.
 * 
 * photoresistence -> close        time -> open   = close
 * photoresistence -> open         time -> close  = close
@@ -133,6 +126,11 @@ void moveDoorAutomaticLogic(String respTime, String respPhotoRes){
   }
 }
 
+/**
+* Set the is manual value.
+* isManual = true -> are used buttons to move the door.
+* isManual = false -> are used time and photoresistence to move the door.
+*/
 void setIsManual(bool value){
   isManual = value;
   sendUpdateIsManual();

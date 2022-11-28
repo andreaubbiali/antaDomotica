@@ -34,11 +34,6 @@ String movementOnTime() {
   timeClient.update();
   int currentHour = timeClient.getHours();
 
-
-  Serial.println("ORARIO: " + String(currentHour) );
-  Serial.println("ORARIO open: " + String(openHour) );
-  Serial.println("ORARIOCLOSE : " + String(closeHour) );
-
   if (currentHour >= openHour && currentHour < closeHour){
     return OPEN;     
   }
@@ -72,7 +67,6 @@ void setCloseTime(String time){
   }
 
   closeHour = tmpHour;
-
   sendUpdateCloseTime(closeHour);
 }
 
