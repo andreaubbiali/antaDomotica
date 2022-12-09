@@ -124,3 +124,22 @@ So for example
 open-time: 06:00
 close-time: 23:00
 ```
+
+## Photoes
+
+![IMG_8513](https://user-images.githubusercontent.com/44111217/206721186-67e5b861-c4ad-436e-9285-2e22d023305b.jpg)
+ 
+https://user-images.githubusercontent.com/44111217/206721258-0ae9b58c-8fa4-4f94-9945-c57a270a05e9.mp4
+
+https://user-images.githubusercontent.com/44111217/206721718-c84176ce-9c02-403d-8d9d-294fac7fad00.MP4
+ 
+
+# TODO
+
+- utilizzare task scheduler invece di loop nelle varie funzioni del codice
+- utilizzare una sola board
+- sistemare il circuito in modo tale da sapere se il blocco del movimento dell'anta è causato da switch open, switch close o ostacolo trovato.
+
+
+
+
