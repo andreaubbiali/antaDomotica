@@ -138,7 +138,8 @@ https://user-images.githubusercontent.com/44111217/206721718-c84176ce-9c02-403d-
 
 - utilizzare task scheduler invece di loop nelle varie funzioni del codice
 - utilizzare una sola board
-- sistemare il circuito in modo tale da sapere se il blocco del movimento dell'anta è causato da switch open, switch close o ostacolo trovato.
+- sistemare il circuito in modo tale da sapere se il blocco del movimento dell'anta è causato da switch open, switch close o ostacolo trovato. Non utilizzare più quindi la connessione in serie dei componenti board-switch1-switch2.
+- sistemare le funzioni che hanno dei timeout interni (per esempio la funzione pulseIn, se non erro, aspetta il ritorno del segnale per un tot di tempo, ti tiene ferma la computazione per quel tot di tempo).
 
 
 
